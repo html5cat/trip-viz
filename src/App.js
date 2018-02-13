@@ -1,21 +1,54 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react'
+import MapGL from 'react-map-gl'
+import DeckGL, { ScatterplotLayer } from 'deck.gl'
+import './App.css'
+import 'mapbox-gl/dist/mapbox-gl.css'
 
-class App extends Component {
+import data from './data/2016-07-02--11-56-24.json'
+
+class Map extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      viewport: {
+        width: 800,
+        height: 800,
+        latitude: 37.7577,
+        longitude: -122.4376,
+        zoom: 8
+      }  
+    }
+
+   this.state.trips = data
+  }
+
+  
   render() {
+    const {viewport, trips} = this.state
+    
+    const layer = new ScatterplotLayer({
+      id: 'trips',
+      data: trips.coords,
+      getPosition: d => [d.lng, d.lat],
+      getColor: d => [255, (100 - d.speed) / 100 * 255, 0],
+      getRadius: d => 10,
+      radiusMinPixels: 3,
+      radiusScale: 1
+    })
+  
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
+      <MapGL
+        {...viewport}
+        onViewportChange={(viewport) => this.setState({viewport})}
+        mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
+      >
+        <DeckGL 
+          {...viewport} 
+          layers={[layer]} 
+        />        
+      </MapGL>
     );
   }
 }
 
-export default App;
+export default Map
