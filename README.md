@@ -6,6 +6,7 @@ To run the app locally follow these steps:
 
 * clone repo
 * `npm install`
+* add `.env.local` file in the root of the project with `REACT_APP_MAPBOX_TOKEN='{your-mapbox-token}'`
 * `npm start`
 
 
